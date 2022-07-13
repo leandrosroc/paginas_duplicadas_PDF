@@ -1,1 +1,3 @@
-# paginas_duplicadas_PDF
+Olá, esse projeto foi feito com o propósito de verificar e corrigir a duplicidade de páginas nos documentos em PDF que possuem página frente e verso.
+
+Em utilização prática, a palavra chave encontrada que estaria sempre na página frente do documento foi: "DATA DE EMISSÃO", com essa informação o programa consegue verificar se ela foi encontrada na primeira página, ou seja, "frente" do documento, e assim validar para que ela não esteja no "verso" do documento, caso não passe por essa etapa, o programa vai fazer a correção e sugerir que o usuário selecione um diretório e um nome de arquivo com extensão "pdf", para salvar o novo arquivo com as devidas correções.
