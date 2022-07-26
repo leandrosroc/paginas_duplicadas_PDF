@@ -34,57 +34,61 @@ pdf = [arq for arq in arquivos if arq.lower().endswith(".pdf")]
 
 #Inicio do programa
 if __name__ == "__main__":
-    print('-----------------------------------------------------------------------')
-    for i in pdf:
-        caminhoDoPDFEntrada = i
-
-        #Abre o arquivo PDF
-        arquivoPDFOriginal = open(caminhoDoPDFEntrada, mode="rb") 
-
-        #Leitura do PDF
-        lerPDF = PdfFileReader(arquivoPDFOriginal)
-
-        totalPaginasPDF = lerPDF.numPages
-        print('Lendo PDF {}, total páginas = {}'.format(caminhoDoPDFEntrada, totalPaginasPDF))
+    #verificando se possui arquivos pdf no diretótio
+    if pdf != []:
         print('-----------------------------------------------------------------------')
+        for i in pdf:
+            caminhoDoPDFEntrada = i
 
-        PDFEstadoPaginas = list()
+            #Abre o arquivo PDF
+            arquivoPDFOriginal = open(caminhoDoPDFEntrada, mode="rb") 
 
-        #Loop em cada pagina do PDF
-        for i in tqdm(range(0, totalPaginasPDF)):
-            paginaEmObjeto = lerPDF.getPage(i)
-            textoNaPagina = paginaEmObjeto.extractText()
-            if palavraChave in textoNaPagina:
-                PDFEstadoPaginas.append("FRENTE")
+            #Leitura do PDF
+            lerPDF = PdfFileReader(arquivoPDFOriginal)
+
+            totalPaginasPDF = lerPDF.numPages
+            print('Lendo PDF {}, total páginas = {}'.format(caminhoDoPDFEntrada, totalPaginasPDF))
+            print('-----------------------------------------------------------------------')
+
+            PDFEstadoPaginas = list()
+
+            #Loop em cada pagina do PDF
+            for i in tqdm(range(0, totalPaginasPDF)):
+                paginaEmObjeto = lerPDF.getPage(i)
+                textoNaPagina = paginaEmObjeto.extractText()
+                if palavraChave in textoNaPagina:
+                    PDFEstadoPaginas.append("FRENTE")
+                else:
+                    PDFEstadoPaginas.append("VERSO")
+
+            listaDePaginas = list(range(0, totalPaginasPDF))
+            selecaoDePaginas = list()
+
+            estadoAnterior = None
+            pagina = 0
+            for estado in PDFEstadoPaginas:
+                estadoAtual = estado
+                
+                if(estadoAtual != estadoAnterior):
+                    selecaoDePaginas.append(pagina)
+
+                estadoAnterior = estadoAtual
+                pagina = pagina + 1
+
+
+            if selecaoDePaginas == listaDePaginas:
+                arquivoPDFOriginal.close()
+                
             else:
-                PDFEstadoPaginas.append("VERSO")
-
-        listaDePaginas = list(range(0, totalPaginasPDF))
-        selecaoDePaginas = list()
-
-        estadoAnterior = None
-        pagina = 0
-        for estado in PDFEstadoPaginas:
-            estadoAtual = estado
-            
-            if(estadoAtual != estadoAnterior):
-                selecaoDePaginas.append(pagina)
-
-            estadoAnterior = estadoAtual
-            pagina = pagina + 1
-
-
-        if selecaoDePaginas == listaDePaginas:
-            arquivoPDFOriginal.close()
-            
-        else:
-            #Caminho do PDF de saída, para salvar o novo arquivo gerado
-            caminhoDoPDFSaida = ExportarPDF()
-            novoArquivoPDF = fitz.open(caminhoDoPDFEntrada)
-            novoArquivoPDF.select(selecaoDePaginas)
-            novoArquivoPDF.save(caminhoDoPDFSaida)
-            novoArquivoPDF.close()
-            arquivoPDFOriginal.close()
-
-
-question = pyautogui.alert(text='Finalizado!', title='Aviso', button="Fechar")
+                #Caminho do PDF de saída, para salvar o novo arquivo gerado
+                caminhoDoPDFSaida = ExportarPDF()
+                novoArquivoPDF = fitz.open(caminhoDoPDFEntrada)
+                novoArquivoPDF.select(selecaoDePaginas)
+                novoArquivoPDF.save(caminhoDoPDFSaida)
+                novoArquivoPDF.close()
+                arquivoPDFOriginal.close()
+    else:
+        pyautogui.alert(text='Não foi localizado nenhum arquivo pdf nesse diretório...', title='Aviso', button="Fechar")
+        quit()
+#fim do programa
+pyautogui.alert(text='Finalizado!', title='Aviso', button="Fechar")
